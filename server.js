@@ -77,11 +77,34 @@ async function init() {
   }
 }
 const departments = () => {
+  const view = 'SELECT * FROM department'
 
-}
+  db.query(view, (err,res) => {
+    if(err){
+      console.log(err + 'department funct');
+    } else {
+      console.table(res);
+      return init();
+    }
+  });
+};
 
-const addDepartment = () => {
+async function addDepartment() {
+  const newDepartment = await inquirer.prompt({
+    type: 'input',
+    message: 'What department do you want to add?',
+    name: 'department'
+  });
 
+  const answer = newDepartment.department;
+  db.query('INSERT INTO department SET ?', {name: answer}, (err,res) => {
+    if(err){
+      console.log(err + 'new department')
+    } else {
+      console.log('deparment added')
+      return init();
+    }
+  })
 }
 
 const deleteDepartment = () => {
