@@ -97,6 +97,7 @@ async function addDepartment() {
   });
 
   const answer = newDepartment.department;
+  
   db.query('INSERT INTO department SET ?', {name: answer}, (err,res) => {
     if(err){
       console.log(err + 'new department')
@@ -104,16 +105,25 @@ async function addDepartment() {
       console.log('deparment added')
       return init();
     }
-  })
-}
+  });
+};
 
 const deleteDepartment = () => {
   
 }
 
 const viewEmployees= () => {
+  const view = 'SELECT * FROM employee'
 
-}
+  db.query(view, (err,res) => {
+    if(err){
+      console.log(err + 'employee funct');
+    } else {
+      console.table(res);
+      return init();
+    }
+  });
+};
 
 const addEmployee = () => {
 
@@ -124,7 +134,16 @@ const deleteEmployee = () => {
 }
 
 const viewRoles = () => {
+  const view = 'SELECT * FROM role'
 
+  db.query(view, (err,res) => {
+    if(err){
+      console.log(err + 'viewRoles funct');
+    } else {
+      console.table(res);
+      return init();
+    }
+  });
 }
 
 const updateRoles = () => {
