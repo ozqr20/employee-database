@@ -3,7 +3,6 @@ const inquirer = require('inquirer');
 const table = require('console.table');
 const util = require('util');
 const express = require("express");
-const { exit } = require('process');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -33,13 +32,13 @@ async function init() {
       name: 'answer',
       choices: [
         'View all Departments',
-        'View all Roles',
-        'View all Employees',
         'Add Deparment',
-        'Add Employee',
-        'Update Employee role',
-        'Delete Employee',
         'Delete Department',
+        'View all Employees',
+        'Add Employee',
+        'Delete Employee',
+        'View all Roles',
+        'Update Employee role',
         'Quit',
       ]
     }];
@@ -66,6 +65,9 @@ async function init() {
       break;
     case 'View all Roles':
       viewRoles();
+      break;
+    case 'Add Role':
+      addRole();
       break;
     case 'Update Employee role':
       updateRoles();
@@ -97,7 +99,7 @@ async function addDepartment() {
   });
 
   const answer = newDepartment.department;
-  
+
   db.query('INSERT INTO department SET ?', {name: answer}, (err,res) => {
     if(err){
       console.log(err + 'new department')
@@ -108,8 +110,27 @@ async function addDepartment() {
   });
 };
 
-const deleteDepartment = () => {
-  
+async function deleteDepartment () {
+  const removeDepartment = await db.query(
+    'SELECT name AS deparments FROM deparment '
+  )
+  const departmentChoices = await inquirer.prompt({
+    type: 'list',
+    message: 'What department you want to remove?',
+    name: 'getdepartment',
+    choices: removeDepartment.map((row) => ({name: row.department}))
+  });
+
+  const selectedDepartment = departmentChoices.gedepartment
+
+  db.query('DELETE FROM deparment WHERE ?', {name: selectedDepartment}, (err,res) => {
+    if(err){
+      console.log(err + "Remove Deparment funct")
+    } else {
+      console.log('Deleted Department Confirmed')
+      return init();
+    }
+  })
 }
 
 const viewEmployees= () => {
@@ -125,13 +146,13 @@ const viewEmployees= () => {
   });
 };
 
-const addEmployee = () => {
+// const addEmployee = () => {
 
-}
+// }
 
-const deleteEmployee = () => {
+// const deleteEmployee = () => {
 
-}
+// }
 
 const viewRoles = () => {
   const view = 'SELECT * FROM role'
@@ -146,7 +167,11 @@ const viewRoles = () => {
   });
 }
 
-const updateRoles = () => {
+// const updateRoles = () => {
 
-}
+// }
+
+// const addRole= () => {
+
+// }
 
