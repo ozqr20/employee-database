@@ -112,20 +112,20 @@ async function addDepartment() {
 
 async function deleteDepartment () {
   const removeDepartment = await db.query(
-    'SELECT name AS deparments FROM department '
+    'SELECT name AS departments FROM department'
   )
   const departmentChoices = await inquirer.prompt({
     type: 'list',
     message: 'What department you want to remove?',
     name: 'getdepartment',
-    choices: removeDepartment.map((row) => ({name: row.department}))
+    choices: removeDepartment.map((row) => ({name: row.departments})) // reference departments as the new name in line 115
   });
 
   const selectedDepartment = departmentChoices.getdepartment
 
-  db.query('DELETE FROM deparment WHERE ?', {name: selectedDepartment}, (err,res) => {
+  db.query('DELETE FROM department WHERE ?', {name: selectedDepartment}, (err,res) => {
     if(err){
-      console.log(err + "Remove Deparment funct")
+      console.log(err + "Remove Department funct")
     } else {
       console.log('Deleted Department Confirmed')
       return init();
