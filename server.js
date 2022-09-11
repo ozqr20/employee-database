@@ -118,7 +118,7 @@ async function deleteDepartment () {
     type: 'list',
     message: 'What department you want to remove?',
     name: 'getdepartment',
-    choices: removeDepartment.map((row) => ({name: row.departments})) // reference departments as the new name in line 115
+    choices: removeDepartment.map((row) => ({name: row.departments}))
   });
 
   const selectedDepartment = departmentChoices.getdepartment
@@ -130,11 +130,13 @@ async function deleteDepartment () {
       console.log('Deleted Department Confirmed')
       return init();
     }
-  })
-}
+  });
+};
 
 const viewEmployees= () => {
-  const view = 'SELECT * FROM employee'
+  const view = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary,'
+  + ' department.name AS department FROM ((employee INNER JOIN role ON employee.role_id = role.id)'
+  + ' INNER JOIN department ON role.department_id = department.id) ORDER BY department'
 
   db.query(view, (err,res) => {
     if(err){
@@ -155,7 +157,7 @@ const viewEmployees= () => {
 // }
 
 const viewRoles = () => {
-  const view = 'SELECT * FROM role'
+  const view = 'SELECT role.title, role.department_id AS id, department.name AS department, role.salary FROM role INNER JOIN department ON role.department_id = department.id ORDER BY title'
 
   db.query(view, (err,res) => {
     if(err){

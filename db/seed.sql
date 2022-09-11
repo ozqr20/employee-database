@@ -16,9 +16,9 @@ INSERT INTO role(title, salary,department_id) VALUES ('CS Manager', 75000, 6);
 
 -- Employees
 INSERT INTO employee(first_name, last_name, manager_id, role_id) VALUES ('KELVIN', 'GUESS', 1,2);
-INSERT INTO employee(first_name, last_name, manager_id, role_id) VALUES ('MIKE', 'TYSON', 2,3);
+INSERT INTO employee(first_name, last_name, manager_id, role_id) VALUES ('MIKE', 'TYSON', 2,6);
 INSERT INTO employee(first_name, last_name, manager_id, role_id) VALUES ('DAVIE', 'BUSTERS', 2, 3);
 INSERT INTO employee(first_name, last_name, manager_id, role_id) VALUES ('HOPPER', 'IHOP', NULL, 5);
 INSERT INTO employee(first_name, last_name, manager_id, role_id) VALUES ('RAMBO', 'SMITH', 2, 4);
-INSERT INTO employee(first_name, last_name, role_id) VALUES ('MARIA', 'CROWREN', NULL, 4);
-INSERT INTO employee(first_name, last_name, role_id) VALUES ('IVAN', 'MELO',NULL, 2);
+INSERT INTO employee(first_name, last_name, role_id) VALUES ('MARIA', 'CROWREN', 1);
+INSERT INTO employee(first_name, last_name, role_id) VALUES ('IVAN', 'MELO', 2);
