@@ -20,7 +20,7 @@ db.connect(err => {
   });
 });
 
-db.query - util.promisify(db.query);
+db.query = util.promisify(db.query);
 
 init();
 
@@ -104,7 +104,7 @@ async function addDepartment() {
     if(err){
       console.log(err + 'new department')
     } else {
-      console.log('deparment added')
+      console.log('department added')
       return init();
     }
   });
@@ -112,7 +112,7 @@ async function addDepartment() {
 
 async function deleteDepartment () {
   const removeDepartment = await db.query(
-    'SELECT name AS deparments FROM deparment '
+    'SELECT name AS deparments FROM department '
   )
   const departmentChoices = await inquirer.prompt({
     type: 'list',
@@ -121,7 +121,7 @@ async function deleteDepartment () {
     choices: removeDepartment.map((row) => ({name: row.department}))
   });
 
-  const selectedDepartment = departmentChoices.gedepartment
+  const selectedDepartment = departmentChoices.getdepartment
 
   db.query('DELETE FROM deparment WHERE ?', {name: selectedDepartment}, (err,res) => {
     if(err){
