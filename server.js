@@ -1,6 +1,6 @@
 const db = require('./db/connection');
 const inquirer = require('inquirer');
-const table = require('console.table');
+const cTable = require('console.table');
 const util = require('util');
 const express = require("express");
 
@@ -136,7 +136,7 @@ async function deleteDepartment () {
 const viewEmployees= () => {
   const view = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary,'
   + ' department.name AS department FROM ((employee INNER JOIN role ON employee.role_id = role.id)'
-  + ' INNER JOIN department ON role.department_id = department.id) ORDER BY department'
+  + ' INNER JOIN department ON role.department_id = department.id) ORDER BY id'
 
   db.query(view, (err,res) => {
     if(err){
@@ -148,16 +148,62 @@ const viewEmployees= () => {
   });
 };
 
-// const addEmployee = () => {
+async function addEmployee() {
+  const selectTitle = await db.query(
+    'SELECT title, department_id FROM role'  
+  )
 
-// }
+  const checkManager = await db.query(
+    'SELECT manager_name FROM employee'
+  )
+
+  const createEmployee = await inquirer.prompt([
+    {
+      type: 'input',
+      message: 'What is your first name?',
+      name: 'name'
+    },
+    {
+      type: 'input',
+      message: 'What is your last name?',
+      name: 'lastname',
+    },
+    {
+      type: 'input',
+      message: 'What is your job title?',
+      name: 'jobtitle',
+      choices: selectTitle.map((row) => ({name: row.title, value: row.department_id})),
+    },
+    {
+      type: 'list',
+      message: 'What is the name of your manager?',
+      name: 'manager',
+      choices: [
+        'Ashley Rodriguez',
+        'Teco Martinez',
+        'John Smith',
+        'Julia Romeo',
+        'Alisson Peña',
+      ]
+    }
+  ]);
+
+  db.query('INSERT INTO employee SET ?', {
+    first_name: createEmployee.name, last_name: createEmployee.lastname, roleID: createEmployee.jobtitle, manager_name: checkManager.manager, manager_id: false}, (err,res) => {
+      if(err){
+        console.log(err + 'AddEmployee func')
+      }
+      console.log('New Employee!')
+      return init();
+    })
+}
 
 // const deleteEmployee = () => {
 
 // }
 
 const viewRoles = () => {
-  const view = 'SELECT role.title, role.department_id AS id, department.name AS department, role.salary FROM role INNER JOIN department ON role.department_id = department.id ORDER BY title'
+  const view = 'SELECT role.title, role.department_id AS id, department.name AS department, role.salary FROM role INNER JOIN department ON role.department_id = department.id ORDER BY id'
 
   db.query(view, (err,res) => {
     if(err){
