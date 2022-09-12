@@ -3,6 +3,7 @@ const inquirer = require('inquirer');
 const cTable = require('console.table');
 const util = require('util');
 const express = require("express");
+const { exit } = require('process');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -38,6 +39,7 @@ async function init() {
         'Add Employee',
         'Delete Employee',
         'View all Roles',
+        'Add Role',
         'Update Employee role',
         'Quit',
       ]
@@ -148,7 +150,7 @@ const viewEmployees= () => {
   });
 };
 
-async function addEmployee() {
+async function addEmployee() { 
   const selectTitle = await db.query(
     'SELECT title, department_id FROM role'  
   )
@@ -196,11 +198,31 @@ async function addEmployee() {
       console.log('New Employee!')
       return init();
     })
+} // 
+
+ async function deleteEmployee() {
+  const byeEmployee = await db.query(
+    'SELECT first_name AS name, last_name AS lastName FROM employee'
+  )
+
+  const chooseEmployee = await inquirer.prompt ({
+    type: 'list',
+    message: 'What employee would like to fire?',
+    name: 'employee',
+    choices: byeEmployee.map((row) => ({name: row.name + ' ' + row.lastName}))
+  });
+
+  const selectedEmployee = chooseEmployee.employee.split(' ');
+  console.log(selectedEmployee);
+
+  db.query('DELETE FROM employee WHERE first_name = ? AND last_name = ?', selectedEmployee, (err,res) => {
+    if(err){
+      console.log(err)
+    }
+    console.log('Employee Deleted')
+    return init();
+  })
 }
-
-// const deleteEmployee = () => {
-
-// }
 
 const viewRoles = () => {
   const view = 'SELECT role.title, role.department_id AS id, department.name AS department, role.salary FROM role INNER JOIN department ON role.department_id = department.id ORDER BY id'
@@ -215,11 +237,69 @@ const viewRoles = () => {
   });
 }
 
-// const updateRoles = () => {
+async function updateRoles() {
+  const employeeData = await db.query(
+    'SELECT first_name AS name, last_name AS lastName, id FROM employee'
+  )
 
-// }
+  const checkRoles = await db.query(
+    'SELECT id, title, salary FROM role'
+  )
 
-// const addRole= () => {
+  const updateRole = await inquirer.prompt([
+    {
+      type: 'list',
+      message: 'Which employee you want to update?',
+      name: 'employee',
+      choices: employeeData.map((row) => ({name: row.name + ' ' + row.lastName, value: row.id}))
+    },
+    {
+      type: 'list',
+      message: 'What new role you will assign?',
+      name: 'update',
+      choices: checkRoles.map((row) => ({name: row.title, value: row.id}))
+    }
+  ]);
 
-// }
+  db.query(`UPDATE employee SET role_id = ${updateRole.update} WHERE id = ${updateRole.employee}`, (err,res) => {
+    if(err){
+      console.log(err + 'updateRoles funct')
+    }
+    console.log('Employee updated')
+    return init();
+  })
+}
+
+async function addRole() {
+  const selectDepts = await db.query(
+    'SELECT name, id FROM department'
+  )
+
+  const role = await inquirer.prompt([
+    {
+      type: 'list',
+      message: 'What department is this role from?',
+      name: 'choice',
+      choices: selectDepts.map((row) => ({name: row.name, value: row.id}))
+    },
+    {
+      type: 'input',
+      message: 'What is the name of the new role?',
+      name: 'title',
+    },
+    {
+      type: 'number',
+      message: 'What is the salary?',
+      name: 'salary',
+    }
+  ]);
+
+  db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${role.title}', '${role.salary}', '${role.choice}')`, (err,res) => {
+    if(err){
+      console.log(err)
+    }
+    console.log('Role Added')
+    return init();
+  })
+}
 
