@@ -152,11 +152,7 @@ const viewEmployees= () => {
 
 async function addEmployee() { 
   const selectTitle = await db.query(
-    'SELECT title, department_id FROM role'  
-  )
-
-  const checkManager = await db.query(
-    'SELECT manager_name FROM employee'
+    'SELECT title, id FROM role'  
   )
 
   const createEmployee = await inquirer.prompt([
@@ -171,27 +167,15 @@ async function addEmployee() {
       name: 'lastname',
     },
     {
-      type: 'input',
+      type: 'list',
       message: 'What is your job title?',
       name: 'jobtitle',
-      choices: selectTitle.map((row) => ({name: row.title, value: row.department_id})),
-    },
-    {
-      type: 'list',
-      message: 'What is the name of your manager?',
-      name: 'manager',
-      choices: [
-        'Ashley Rodriguez',
-        'Teco Martinez',
-        'John Smith',
-        'Julia Romeo',
-        'Alisson Peña',
-      ]
+      choices: selectTitle.map((row) => ({name: row.title, value: row.id})),
     }
   ]);
 
   db.query('INSERT INTO employee SET ?', {
-    first_name: createEmployee.name, last_name: createEmployee.lastname, roleID: createEmployee.jobtitle, manager_name: checkManager.manager, manager_id: false}, (err,res) => {
+    first_name: createEmployee.name, last_name: createEmployee.lastname, role_id: createEmployee.jobtitle}, (err,res) => {
       if(err){
         console.log(err + 'AddEmployee func')
       }
